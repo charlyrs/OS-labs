@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+mkdir build
+echo  [ Building Number... ]
+
+g++ -c Number/Number.cpp -o build/Number.o
+ar rc build/Number.a build/Number.o
+
+echo [ Building Vector... ]
+
+g++ -c -INumber Vector/Vector.cpp -o build/Vector.o
+g++ -dynamiclib build/Number.a build/Vector.o -shared -o build/Vector.so
+
+echo [ Building Main... ]
+
+g++ -o lab1 lab1console/lab1.cpp -IVector -INumber build/Vector.so build/Number.a;
+./lab1
+
+rm -R build
+
