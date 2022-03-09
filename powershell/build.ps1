@@ -1,18 +1,20 @@
 mkdir build
-echo  [ Building Number... ]
+echo  [Building Number...]
 
 g++ -c Number/Number.cpp -o build/Number.o
 ar rc build/Number.lib build/Number.o
 
-echo [ Building Vector... ]
+echo [Building Vector...]
 
 g++ -c -INumber Vector/Vector.cpp -o build/Vector.o
 g++  build/Vector.o build/Number.lib -shared -o build/Vector.dll
 
-echo [ Building Main... ]
+echo [Building Main...]
 
-g++ -o lab1.exe lab1console/lab1.cpp -INumber -IVector build/Vector.dll build/Number.lib;
-.\lab1.exe
+g++ lab1console/lab1.cpp -o build/lab1 -INumber -IVector build/Vector.dll build/Number.lib
+
+.\build\lab1
+
 echo [FINISHED]
-rm -R build
 
+rm -R build
