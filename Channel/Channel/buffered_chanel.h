@@ -47,11 +47,12 @@ BufferedChannel<T>& BufferedChannel<T>::operator=(BufferedChannel<T>&& other)
 template <class T>
 void BufferedChannel<T>::Send(T value)
 {
+	std::unique_lock<std::mutex> u(mutex);
 	if (!is_opened) {
 		throw std::runtime_error("Channel is closed");
 	}
 		
-	std::unique_lock<std::mutex> u(mutex);
+	
 	cv.wait(u, [&] {return !(container.size() == buffer_size); });
 	container.push(value);
 	u.unlock();
