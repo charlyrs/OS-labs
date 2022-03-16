@@ -56,7 +56,7 @@ void BufferedChannel<T>::Send(T value)
 	cv.wait(u, [&] {return !(container.size() == buffer_size); });
 	container.push(value);
 	u.unlock();
-	cv.notify_all();	
+	cv.notify_one();	
 }
 
 template <class T>
@@ -64,11 +64,11 @@ std::pair<T, bool> BufferedChannel<T>::Recv()
 {
 	std::unique_lock<std::mutex> u(mutex);
 	cv.wait(u, [&] {return !container.empty(); });
-	int val = container.front();
+	T val = container.front();
 	container.pop();
 	u.unlock();
-	cv.notify_all();
-	return std::pair<int, bool>(val, is_opened);
+	cv.notify_one();
+	return std::pair<T, bool>(val, is_opened);
 }
 template <class T>
 void BufferedChannel<T>::Close()
@@ -76,5 +76,5 @@ void BufferedChannel<T>::Close()
 	std::unique_lock<std::mutex> u(mutex);
 	is_opened = false;	
 	u.unlock();
-	cv.notify_all();
+	cv.notify_one();
 }
