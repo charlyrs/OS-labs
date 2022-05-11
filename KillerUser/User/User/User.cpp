@@ -42,6 +42,8 @@ public:
         PROCESS_INFORMATION procInf = {0};
         if (CreateProcessA(killer_path, proc, NULL, NULL, FALSE, 0, NULL, NULL, &startUpInf, &procInf)) {
             WaitForSingleObject(procInf.hProcess, INFINITE);
+            CloseHandle(procInf.hProcess);
+            CloseHandle(procInf.hThread);
         }
     }
 };
