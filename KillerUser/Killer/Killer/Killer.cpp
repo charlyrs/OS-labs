@@ -12,7 +12,7 @@ const DWORD max_size = 3000;
 class ProcessKiller {
 public:
     bool killProcessById(llong id) {
-        HANDLE processToKill = OpenProcess(PROCESS_TERMINATE, FALSE, (DWORD) id);
+        HANDLE processToKill = OpenProcess(PROCESS_TERMINATE, FALSE, (DWORD)id);
         if (processToKill != NULL) {
             TerminateProcess(processToKill, 0);
             CloseHandle(processToKill);
@@ -21,7 +21,7 @@ public:
         return false;
     }
 
-    bool killProcessByName(const char *name) {
+    bool killProcessByName(const char* name) {
         bool killed = false;
         HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);
         PROCESSENTRY32 pEntry;
@@ -42,13 +42,14 @@ public:
     void printState(bool killed, std::string name) {
         if (killed) {
             std::cout << "\n[Process " << name << " was successfuly terminated]";
-        } else {
+        }
+        else {
             std::cout << "\n[An error occured while trying to terminate process " << name << ']';
         }
     }
 };
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     ProcessKiller killer;
     char buffer[max_size];
     auto got_var = GetEnvironmentVariableA("PROC_TO_KILL", buffer, max_size);
@@ -70,17 +71,17 @@ int main(int argc, char *argv[]) {
     std::string flag = "";
     if (argc > 1) {
         flag = argv[0];
-    } else return 0;
+    }
+    else return 0;
 
-    if (flag == "-n") {
-        std::cout << flag << '\n';
-        std::string name(argv[1]);
+    if (flag[0] > '9' || flag[0] < '0') {
+        std::string name(flag);
         auto killed = killer.killProcessByName((name + ".exe").c_str());
         killer.printState(killed, name);
-    } else if (flag == "-id") {
-        std::cout << flag << std::endl;
-        auto killed = killer.killProcessById(atoi(argv[1]));
-        killer.printState(killed, std::string(argv[1]));
+    }
+    else {
+        auto killed = killer.killProcessById(atoi(flag.c_str()));
+        killer.printState(killed, std::string(flag));
     }
 
     return 0;
