@@ -2,7 +2,9 @@
 #include <string>
 #include<unistd.h>
 #define READ  0
+#define STDIN 0
 #define WRITE 1
+#define STDOUT 1
 const std::string proc[]{
         "../../M/cmake-build-debug/M",
         "../../A/cmake-build-debug/A",
@@ -14,13 +16,13 @@ int pipefd[2];
 int main() {
     for (int i = 0; i < 3; i++) {
         if (pipe(pipefd) < 0){ std::exit(1); }
-        bool f = fork();
-        if (!f){
-            if (dup2(pipefd[WRITE], WRITE) < 0) { exit(1); }
+        auto pid = fork();
+        if (pid == 0){
+            dup2(pipefd[WRITE], STDOUT);
             system(proc[i].c_str());
             std::exit(0);
         }
-        if (dup2(pipefd[READ], READ) < 0) { std::exit(1);}
+        dup2(pipefd[READ], STDIN);
         close(pipefd[WRITE]);
         close(pipefd[READ]);
     }
